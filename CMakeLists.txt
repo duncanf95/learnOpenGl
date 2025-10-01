@@ -3,7 +3,9 @@ project(learnOpenGL)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(learnOpenGL src/main.cpp)
+add_executable(learnOpenGL src/main.cpp
+        src/renderer/shader.cpp
+        src/renderer/shader.h)
 
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/glad)
