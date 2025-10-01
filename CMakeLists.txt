@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 4.0)
 project(learnOpenGL)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 
-add_executable(learnOpenGL src/main.cpp
+add_executable(learnOpenGL
+        src/main.cpp
         src/renderer/shader.cpp
-        src/renderer/shader.h)
+        src/renderer/shader.h
+        src/stb_image.h
+)
 
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/glad)
