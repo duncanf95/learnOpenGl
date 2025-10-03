@@ -66,14 +66,17 @@ int main()
     };
 
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("/Users/duncan/Code/C++/learnOpenGL/assets/wall.jpg", &width, &height, &nrChannels, 0);
+    stbi_set_flip_vertically_on_load(true);
 
-    unsigned int texture;
-    glGenTextures(1, &texture);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    unsigned char *data = stbi_load("/Users/duncan/Code/C++/learnOpenGL/assets/wall.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -83,8 +86,30 @@ int main()
     {
         std::cout << "Failed to load texture" << std::endl;
     }
+
     stbi_image_free(data);
 
+
+
+
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    data = stbi_load("/Users/duncan/Code/C++/learnOpenGL/assets/awesomeface.png", &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
 
 
     float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
@@ -117,10 +142,10 @@ int main()
 
     // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    shader.use();
+    glUniform1i(glGetUniformLocation(shader.Id, "texture1"), 0); // set it manually
+    shader.setInt("texture2", 1);
 
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
 
 
     // uncomment this call to draw in wireframe polygons.
@@ -140,9 +165,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw our first triangle
-        shader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        shader.use();
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glBindVertexArray(0); // no need to unbind it every time
